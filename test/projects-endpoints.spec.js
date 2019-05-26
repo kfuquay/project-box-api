@@ -3,7 +3,7 @@ const knex = require("knex");
 const app = require("../src/app");
 const { makeProjectsArray } = require("./projects.fixtures");
 
-describe.only(`projects endpoints`, function() {
+describe(`projects endpoints`, function() {
   let db;
 
   before("make knex instance", () => {
@@ -67,6 +67,29 @@ describe.only(`projects endpoints`, function() {
           .get(`/projects/${projectId}`)
           .expect(200, expectedProject);
       });
+    });
+  });
+
+  describe.only(`POST /projects`, () => {
+    it(`creates a project, responding with 201 and the new project`, function() {
+      const newProject = {
+        title: "test",
+        summary: "test summary",
+      };
+      return supertest(app)
+        .post("/projects")
+        .send(newProject)
+        .expect(res => {
+          expect(res.body.title).to.eql(newProject.title);
+          expect(res.body.summary).to.eql(newProject.summary);
+          expect(res.body).to.have.property("id");
+          expect(res.headers.location).to.eql(`/projects/${res.body.id}`)
+        })
+        .then(postRes =>
+          supertest(app)
+            .get(`/projects/${postRes.body.id}`)
+            .expect(postRes.body)
+        );
     });
   });
 });

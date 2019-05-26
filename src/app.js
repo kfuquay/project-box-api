@@ -7,6 +7,7 @@ const { NODE_ENV } = require("./config");
 const ProjectsService = require("./projects/projects-service");
 
 const app = express();
+const jsonParser = express.json();
 
 const morganOption = NODE_ENV === "production" ? "tiny" : "common";
 
@@ -37,6 +38,16 @@ app.get("/projects/:project_id", (req, res, next) => {
         });
       }
       res.json(project);
+    })
+    .catch(next);
+});
+
+app.post("/projects", jsonParser, (req, res, next) => {
+  const { title, summary } = req.body;
+  const newProject = { title, summary };
+  ProjectsService.insertProject(req.app.get("db"), newProject)
+    .then(project => {
+      res.status(201).location(`/projects/${project.id}`).json(project);
     })
     .catch(next);
 });
