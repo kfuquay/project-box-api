@@ -23,11 +23,11 @@ describe(`projects endpoints`, function() {
 
   afterEach("cleanup the table", () => db("projects").truncate());
 
-  describe(`GET /projects`, () => {
+  describe(`GET /api/projects`, () => {
     context(`Given no projects`, () => {
       it(`responds with 200 and an empty list`, () => {
         return supertest(app)
-          .get("/projects")
+          .get("/api/projects")
           .expect(200, []);
       });
     });
@@ -41,7 +41,7 @@ describe(`projects endpoints`, function() {
 
       it("responds with 200 and all of the projects", () => {
         return supertest(app)
-          .get("/projects")
+          .get("/api/projects")
           .expect(200, testProjects);
       });
     });
@@ -54,7 +54,7 @@ describe(`projects endpoints`, function() {
 
       it("removes XSS attack content", () => {
         return supertest(app)
-          .get(`/projects`)
+          .get(`/api/projects`)
           .expect(200)
           .expect(res => {
             expect(res.body[0].title).to.eql(expectedProject.title);
@@ -63,12 +63,12 @@ describe(`projects endpoints`, function() {
       });
     });
   });
-  describe(`GET /projects/:project_id`, () => {
+  describe(`GET /api/projects/:project_id`, () => {
     context("Given no projects", () => {
       it("responds with 404", () => {
         const projectId = 123455;
         return supertest(app)
-          .get(`/projects/${projectId}`)
+          .get(`/api/projects/${projectId}`)
           .expect(404, { error: { message: `Project does not exist` } });
       });
     });
@@ -83,7 +83,7 @@ describe(`projects endpoints`, function() {
         const projectId = 2;
         const expectedProject = testProjects[projectId - 1];
         return supertest(app)
-          .get(`/projects/${projectId}`)
+          .get(`/api/projects/${projectId}`)
           .expect(200, expectedProject);
       });
     });
@@ -96,7 +96,7 @@ describe(`projects endpoints`, function() {
 
       it("removes XSS attack content", () => {
         return supertest(app)
-          .get(`/projects/${maliciousProject.id}`)
+          .get(`/api/projects/${maliciousProject.id}`)
           .expect(200)
           .expect(res => {
             expect(res.body.title).to.eql(expectedProject.title);
@@ -106,31 +106,31 @@ describe(`projects endpoints`, function() {
     });
   });
 
-  describe(`POST /projects`, () => {
+  describe(`POST /api/projects`, () => {
     it(`creates a project, responding with 201 and the new project`, function() {
       const newProject = {
         title: "test",
         summary: "test summary",
       };
       return supertest(app)
-        .post("/projects")
+        .post("/api/projects")
         .send(newProject)
         .expect(201)
         .expect(res => {
           expect(res.body.title).to.eql(newProject.title);
           expect(res.body.summary).to.eql(newProject.summary);
           expect(res.body).to.have.property("id");
-          expect(res.headers.location).to.eql(`/projects/${res.body.id}`);
+          expect(res.headers.location).to.eql(`/api/projects/${res.body.id}`);
         })
         .then(postRes =>
           supertest(app)
-            .get(`/projects/${postRes.body.id}`)
+            .get(`/api/projects/${postRes.body.id}`)
             .expect(postRes.body)
         );
     });
     it(`responds with 400 and an error message when the 'title' is missing`, () => {
       return supertest(app)
-        .post("/projects")
+        .post("/api/projects")
         .send({
           summary: "test summary",
         })
@@ -141,7 +141,7 @@ describe(`projects endpoints`, function() {
     it("removes XSS attack content from response", () => {
       const { maliciousProject, expectedProject } = makeMaliciousProject();
       return supertest(app)
-        .post("/projects")
+        .post("/api/projects")
         .send(maliciousProject)
         .expect(201)
         .expect(res => {
@@ -151,7 +151,7 @@ describe(`projects endpoints`, function() {
     });
   });
 
-  describe(`DELETE /projects/:project_id`, () => {
+  describe(`DELETE /api/projects/:project_id`, () => {
     context("Given there are projects in the database", () => {
       const testProjects = makeProjectsArray();
 
@@ -165,11 +165,11 @@ describe(`projects endpoints`, function() {
           project => project.id !== idToRemove
         );
         return supertest(app)
-          .delete(`/projects/${idToRemove}`)
+          .delete(`/api/projects/${idToRemove}`)
           .expect(204)
           .then(res =>
             supertest(app)
-              .get(`/projects`)
+              .get(`/api/projects`)
               .expect(expectedProjects)
           );
       });
@@ -178,7 +178,7 @@ describe(`projects endpoints`, function() {
       it("responds with 404", () => {
         const projectId = 98765545;
         return supertest(app)
-          .delete(`/projects/${projectId}`)
+          .delete(`/api/projects/${projectId}`)
           .expect(404, { error: { message: `Project does not exist` } });
       });
     });

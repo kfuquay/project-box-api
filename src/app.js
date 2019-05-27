@@ -14,7 +14,7 @@ app.use(morgan(morganOption));
 app.use(cors());
 app.use(helmet());
 
-app.use('/projects', projectsRouter)
+app.use('/api/projects', projectsRouter)
 
 app.get("/api/", (req, res) => {
   res.json({ ok: true });

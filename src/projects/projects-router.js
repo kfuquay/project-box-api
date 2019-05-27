@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require("express");
 const xss = require("xss");
 const ProjectsService = require("./projects-service");
@@ -34,7 +35,7 @@ projectsRouter
       .then(project => {
         res
           .status(201)
-          .location(`/projects/${project.id}`)
+          .location(path.posix.join(req.originalUrl, `/${project.id}`))
           .json(serializeProject(project));
       })
       .catch(next);
