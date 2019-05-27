@@ -4,10 +4,9 @@ const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 const { NODE_ENV } = require("./config");
-const ProjectsService = require("./projects/projects-service");
+const projectsRouter = require('./projects/projects-router')
 
 const app = express();
-const jsonParser = express.json();
 
 const morganOption = NODE_ENV === "production" ? "tiny" : "common";
 
@@ -15,41 +14,10 @@ app.use(morgan(morganOption));
 app.use(cors());
 app.use(helmet());
 
+app.use('/projects', projectsRouter)
+
 app.get("/api/", (req, res) => {
   res.json({ ok: true });
-});
-
-app.get("/projects", (req, res, next) => {
-  const knexInstance = req.app.get("db");
-  ProjectsService.getAllProjects(knexInstance)
-    .then(projects => {
-      res.json(projects);
-    })
-    .catch(next);
-});
-
-app.get("/projects/:project_id", (req, res, next) => {
-  const knexInstance = req.app.get("db");
-  ProjectsService.getById(knexInstance, req.params.project_id)
-    .then(project => {
-      if (!project) {
-        return res.status(404).json({
-          error: { message: `Project does not exist` },
-        });
-      }
-      res.json(project);
-    })
-    .catch(next);
-});
-
-app.post("/projects", jsonParser, (req, res, next) => {
-  const { title, summary } = req.body;
-  const newProject = { title, summary };
-  ProjectsService.insertProject(req.app.get("db"), newProject)
-    .then(project => {
-      res.status(201).location(`/projects/${project.id}`).json(project);
-    })
-    .catch(next);
 });
 
 app.use(function errorHandler(error, req, res, next) {

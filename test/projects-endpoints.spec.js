@@ -70,7 +70,7 @@ describe(`projects endpoints`, function() {
     });
   });
 
-  describe.only(`POST /projects`, () => {
+  describe(`POST /projects`, () => {
     it(`creates a project, responding with 201 and the new project`, function() {
       const newProject = {
         title: "test",
