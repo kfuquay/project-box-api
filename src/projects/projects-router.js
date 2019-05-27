@@ -33,22 +33,34 @@ projectsRouter
       .catch(next);
   });
 
-projectsRouter.route("/:project_id").get((req, res, next) => {
-  const knexInstance = req.app.get("db");
-  ProjectsService.getById(knexInstance, req.params.project_id)
-    .then(project => {
-      if (!project) {
-        return res.status(404).json({
-          error: { message: `Project does not exist` },
-        });
-      }
-      res.json({
-        id: project.id,
-        title: xss(project.title),
-        summary: xss(project.summary),
-      });
-    })
-    .catch(next);
-});
+projectsRouter
+  .route("/:project_id")
+  .all((req, res, next) => {
+    ProjectsService.getById(req.app.get("db"), req.params.project_id)
+      .then(project => {
+        if (!project) {
+          return res.status(404).json({
+            error: { message: `Project does not exist` },
+          });
+        }
+        res.project = project;
+        next();
+      })
+      .catch(next);
+  })
+  .get((req, res, next) => {
+    res.json({
+      id: project.id,
+      title: xss(project.title),
+      summary: xss(project.summary),
+    });
+  })
+  .delete((req, res, next) => {
+    ProjectsService.deleteProject(req.app.get("db"), req.params.project_id)
+      .then(() => {
+        res.status(204).end();
+      })
+      .catch(next);
+  });
 
 module.exports = projectsRouter;

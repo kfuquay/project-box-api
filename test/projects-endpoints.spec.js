@@ -44,7 +44,7 @@ describe(`projects endpoints`, function() {
     });
   });
 
-  describe.only(`GET /projects/:project_id`, () => {
+  describe(`GET /projects/:project_id`, () => {
     context("Given no projects", () => {
       it("responds with 404", () => {
         const projectId = 123455;
@@ -125,6 +125,39 @@ describe(`projects endpoints`, function() {
         .expect(400, {
           error: { message: `Missing 'title' in request body` },
         });
+    });
+  });
+
+  describe.only(`DELETE /projects/:project_id`, () => {
+    context("Given there are projects in the database", () => {
+      const testProjects = makeProjectsArray();
+
+      beforeEach("insert projects", () => {
+        return db.into("projects").insert(testProjects);
+      });
+
+      it("responds with 204 and removes the article", () => {
+        const idToRemove = 2;
+        const expectedProjects = testProjects.filter(
+          project => project.id !== idToRemove
+        );
+        return supertest(app)
+          .delete(`/projects/${idToRemove}`)
+          .expect(204)
+          .then(res =>
+            supertest(app)
+              .get(`/projects`)
+              .expect(expectedProjects)
+          );
+      });
+    });
+    context("Given no projects", () => {
+      it("responds with 404", () => {
+        const projectId = 98765545;
+        return supertest(app)
+          .delete(`/projects/${projectId}`)
+          .expect(404, { error: { message: `Project does not exist` } });
+      });
     });
   });
 });
