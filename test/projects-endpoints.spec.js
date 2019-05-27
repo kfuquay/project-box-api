@@ -44,7 +44,7 @@ describe(`projects endpoints`, function() {
     });
   });
 
-  describe(`GET /projects/:project_id`, () => {
+  describe.only(`GET /projects/:project_id`, () => {
     context("Given no projects", () => {
       it("responds with 404", () => {
         const projectId = 123455;
@@ -68,9 +68,34 @@ describe(`projects endpoints`, function() {
           .expect(200, expectedProject);
       });
     });
+    context(`Given an XSS attack project`, () => {
+      const maliciousProject = {
+        id: 911,
+        title: 'Naughty naughty very naughty <script>alert("xss");</script>',
+        summary: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
+      };
+
+      beforeEach("insert malicious project", () => {
+        return db.into("projects").insert([maliciousProject]);
+      });
+
+      it("removes XSS attack content", () => {
+        return supertest(app)
+          .get(`/projects/${maliciousProject.id}`)
+          .expect(200)
+          .expect(res => {
+            expect(res.body.title).to.eql(
+              'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;'
+            );
+            expect(res.body.summary).to.eql(
+              `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`
+            );
+          });
+      });
+    });
   });
 
-  describe.only(`POST /projects`, () => {
+  describe(`POST /projects`, () => {
     it(`creates a project, responding with 201 and the new project`, function() {
       const newProject = {
         title: "test",

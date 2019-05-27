@@ -1,4 +1,5 @@
 const express = require("express");
+const xss = require("xss");
 const ProjectsService = require("./projects-service");
 
 const projectsRouter = express.Router();
@@ -41,7 +42,11 @@ projectsRouter.route("/:project_id").get((req, res, next) => {
           error: { message: `Project does not exist` },
         });
       }
-      res.json(project);
+      res.json({
+        id: project.id,
+        title: xss(project.title),
+        summary: xss(project.summary),
+      });
     })
     .catch(next);
 });
