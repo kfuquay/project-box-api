@@ -16,6 +16,12 @@ projectsRouter
   .post(jsonParser, (req, res, next) => {
     const { title, summary } = req.body;
     const newProject = { title, summary };
+
+    if (!title) {
+      return res.status(400).json({
+        error: { message: `Missing 'title' in request body` },
+      });
+    }
     ProjectsService.insertProject(req.app.get("db"), newProject)
       .then(project => {
         res

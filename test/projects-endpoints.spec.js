@@ -70,7 +70,7 @@ describe(`projects endpoints`, function() {
     });
   });
 
-  describe(`POST /projects`, () => {
+  describe.only(`POST /projects`, () => {
     it(`creates a project, responding with 201 and the new project`, function() {
       const newProject = {
         title: "test",
@@ -83,13 +83,23 @@ describe(`projects endpoints`, function() {
           expect(res.body.title).to.eql(newProject.title);
           expect(res.body.summary).to.eql(newProject.summary);
           expect(res.body).to.have.property("id");
-          expect(res.headers.location).to.eql(`/projects/${res.body.id}`)
+          expect(res.headers.location).to.eql(`/projects/${res.body.id}`);
         })
         .then(postRes =>
           supertest(app)
             .get(`/projects/${postRes.body.id}`)
             .expect(postRes.body)
         );
+    });
+    it(`responds with 400 and an error message when the 'title' is missing`, () => {
+      return supertest(app)
+        .post("/projects")
+        .send({
+          summary: "test summary",
+        })
+        .expect(400, {
+          error: { message: `Missing 'title' in request body` },
+        });
     });
   });
 });
