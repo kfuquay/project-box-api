@@ -5,12 +5,19 @@ const ProjectsService = require("./projects-service");
 const projectsRouter = express.Router();
 const jsonParser = express.json();
 
+const serializeProject = project => ({
+  id: project.id,
+  title: xss(project.title),
+  summary: xss(project.summary),
+});
+
 projectsRouter
   .route("/")
   .get((req, res, next) => {
-    ProjectsService.getAllProjects(req.app.get("db"))
+    const knexInstance = req.app.get("db");
+    ProjectsService.getAllProjects(knexInstance)
       .then(projects => {
-        res.json(projects);
+        res.json(projects.map(serializeProject));
       })
       .catch(next);
   })
@@ -28,7 +35,7 @@ projectsRouter
         res
           .status(201)
           .location(`/projects/${project.id}`)
-          .json(project);
+          .json(serializeProject(project));
       })
       .catch(next);
   });
@@ -49,15 +56,11 @@ projectsRouter
       .catch(next);
   })
   .get((req, res, next) => {
-    res.json({
-      id: project.id,
-      title: xss(project.title),
-      summary: xss(project.summary),
-    });
+    res.json(serializeProject(res.project));
   })
   .delete((req, res, next) => {
     ProjectsService.deleteProject(req.app.get("db"), req.params.project_id)
-      .then(() => {
+      .then(numRowsAffected => {
         res.status(204).end();
       })
       .catch(next);

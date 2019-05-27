@@ -1,7 +1,10 @@
 const { expect } = require("chai");
 const knex = require("knex");
 const app = require("../src/app");
-const { makeProjectsArray } = require("./projects.fixtures");
+const {
+  makeProjectsArray,
+  makeMaliciousProject,
+} = require("./projects.fixtures");
 
 describe(`projects endpoints`, function() {
   let db;
@@ -42,8 +45,24 @@ describe(`projects endpoints`, function() {
           .expect(200, testProjects);
       });
     });
-  });
+    context("Given an XSS attack project", () => {
+      const { maliciousProject, expectedProject } = makeMaliciousProject();
 
+      beforeEach("insert malicious project", () => {
+        return db.into("projects").insert([maliciousProject]);
+      });
+
+      it("removes XSS attack content", () => {
+        return supertest(app)
+          .get(`/projects`)
+          .expect(200)
+          .expect(res => {
+            expect(res.body[0].title).to.eql(expectedProject.title);
+            expect(res.body[0].summary).to.eql(expectedProject.summary);
+          });
+      });
+    });
+  });
   describe(`GET /projects/:project_id`, () => {
     context("Given no projects", () => {
       it("responds with 404", () => {
@@ -69,11 +88,7 @@ describe(`projects endpoints`, function() {
       });
     });
     context(`Given an XSS attack project`, () => {
-      const maliciousProject = {
-        id: 911,
-        title: 'Naughty naughty very naughty <script>alert("xss");</script>',
-        summary: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
-      };
+      const { maliciousProject, expectedProject } = makeMaliciousProject();
 
       beforeEach("insert malicious project", () => {
         return db.into("projects").insert([maliciousProject]);
@@ -84,12 +99,8 @@ describe(`projects endpoints`, function() {
           .get(`/projects/${maliciousProject.id}`)
           .expect(200)
           .expect(res => {
-            expect(res.body.title).to.eql(
-              'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;'
-            );
-            expect(res.body.summary).to.eql(
-              `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`
-            );
+            expect(res.body.title).to.eql(expectedProject.title);
+            expect(res.body.summary).to.eql(expectedProject.summary);
           });
       });
     });
@@ -104,6 +115,7 @@ describe(`projects endpoints`, function() {
       return supertest(app)
         .post("/projects")
         .send(newProject)
+        .expect(201)
         .expect(res => {
           expect(res.body.title).to.eql(newProject.title);
           expect(res.body.summary).to.eql(newProject.summary);
@@ -126,9 +138,20 @@ describe(`projects endpoints`, function() {
           error: { message: `Missing 'title' in request body` },
         });
     });
+    it("removes XSS attack content from response", () => {
+      const { maliciousProject, expectedProject } = makeMaliciousProject();
+      return supertest(app)
+        .post("/projects")
+        .send(maliciousProject)
+        .expect(201)
+        .expect(res => {
+          expect(res.body.title).to.eql(expectedProject.title);
+          expect(res.body.summary).to.eql(expectedProject.summary);
+        });
+    });
   });
 
-  describe.only(`DELETE /projects/:project_id`, () => {
+  describe(`DELETE /projects/:project_id`, () => {
     context("Given there are projects in the database", () => {
       const testProjects = makeProjectsArray();
 
@@ -136,7 +159,7 @@ describe(`projects endpoints`, function() {
         return db.into("projects").insert(testProjects);
       });
 
-      it("responds with 204 and removes the article", () => {
+      it("responds with 204 and removes the project", () => {
         const idToRemove = 2;
         const expectedProjects = testProjects.filter(
           project => project.id !== idToRemove
