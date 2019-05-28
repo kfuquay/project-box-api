@@ -1,5 +1,6 @@
 const knex = require("knex");
 const app = require("../src/app");
+const bcrypt = require("bcryptjs");
 const helpers = require("./test-helpers");
 
 describe("Users Endpoints", function() {
@@ -21,12 +22,10 @@ describe("Users Endpoints", function() {
 
   afterEach("cleanup the table", () => helpers.cleanTables(db));
 
-  describe(`POST /api/users`, () => {
+  describe.only(`POST /api/users`, () => {
     context(`User Validation`, () => {
       beforeEach("insert users", () => {
-        return db
-        .into("users")
-        .insert(testUsers)
+        return db.into("users").insert(testUsers);
       });
 
       const requiredFields = ["username", "password"];
@@ -110,7 +109,7 @@ describe("Users Endpoints", function() {
               error: `Password must contain at least one uppercase, lowercase, number and special character`,
             });
         });
-        it.only(`responds 400 'User name already taken' when user_name isn't unique`, () => {
+        it(`responds 400 'User name already taken' when user_name isn't unique`, () => {
           const duplicateUser = {
             username: testUser.username,
             password: "11AAaa!!",
@@ -120,6 +119,39 @@ describe("Users Endpoints", function() {
             .send(duplicateUser)
             .expect(400, { error: `Username already taken` });
         });
+      });
+    });
+    context(`the happy path`, () => {
+      it(`responds 201, serialized user, storing bcrypted password`, () => {
+        const newUser = {
+          username: "test username",
+          password: "11AAaa!!",
+        };
+        return supertest(app)
+          .post("/api/users")
+          .send(newUser)
+          .expect(201)
+          .expect(res => {
+            expect(res.body).to.have.property("id");
+            expect(res.body.username).to.eql(newUser.username);
+            expect(res.body).to.not.have.property("password");
+            expect(res.headers.location).to.eql(`/api/users/${res.body.id}`);
+          })
+          .expect(res =>
+            db
+              .from("users")
+              .select("*")
+              .where({ id: res.body.id })
+              .first()
+              .then(row => {
+                expect(row.username).to.eql(newUser.username);
+
+                return bcrypt.compare(newUser.password, row.password);
+              })
+              .then(compareMatch => {
+                expect(compareMatch).to.be.true;
+              })
+          );
       });
     });
   });

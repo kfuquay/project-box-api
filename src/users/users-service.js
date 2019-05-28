@@ -7,14 +7,12 @@ const UsersService = {
   getAllUsers(knex) {
     return knex.select("*").from("users");
   },
-  insertUser(knex, newUser) {
-    return knex
+  insertUser(db, newUser) {
+    return db
       .insert(newUser)
       .into("users")
       .returning("*")
-      .then(rows => {
-        return rows[0];
-      });
+      .then(([user]) => user);
   },
   getById(knex, id) {
     return knex
@@ -61,10 +59,7 @@ const UsersService = {
   serializeUser(user) {
     return {
       id: user.id,
-      full_name: xss(user.full_name),
-      user_name: xss(user.user_name),
-      nickname: xss(user.nick_name),
-      date_created: new Date(user.date_created),
+      username: xss(user.username),
     };
   },
 };
