@@ -22,7 +22,7 @@ describe("Users Endpoints", function() {
 
   afterEach("cleanup the table", () => helpers.cleanTables(db));
 
-  describe.only(`POST /api/users`, () => {
+  describe(`POST /api/users`, () => {
     context(`User Validation`, () => {
       beforeEach("insert users", () => {
         return db.into("users").insert(testUsers);
