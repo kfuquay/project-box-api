@@ -19,9 +19,9 @@ describe(`projects endpoints`, function() {
 
   after("disconnect from db", () => db.destroy());
 
-  before("clean the table", () => db("projects").truncate());
+  before('clean the table', () => db.raw('TRUNCATE projects, materials, steps, users RESTART IDENTITY CASCADE'))
 
-  afterEach("cleanup the table", () => db("projects").truncate());
+  afterEach('cleanup the table',() => db.raw('TRUNCATE projects, materials, steps, users RESTART IDENTITY CASCADE'))
 
   describe(`GET /api/projects`, () => {
     context(`Given no projects`, () => {
