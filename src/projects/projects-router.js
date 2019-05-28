@@ -10,6 +10,7 @@ const serializeProject = project => ({
   id: project.id,
   title: xss(project.title),
   summary: xss(project.summary),
+  user_id: project.user_id
 });
 
 projectsRouter
@@ -23,7 +24,7 @@ projectsRouter
       .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
-    const { title, summary } = req.body;
+    const { title, summary, user_id} = req.body;
     const newProject = { title, summary };
 
     if (!title) {
@@ -31,6 +32,9 @@ projectsRouter
         error: { message: `Missing 'title' in request body` },
       });
     }
+
+    newProject.user_id = user_id
+    
     ProjectsService.insertProject(req.app.get("db"), newProject)
       .then(project => {
         res

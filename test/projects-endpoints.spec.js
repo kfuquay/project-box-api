@@ -1,10 +1,14 @@
 const { expect } = require("chai");
 const knex = require("knex");
 const app = require("../src/app");
-const {
+const  {
   makeProjectsArray,
   makeMaliciousProject,
-} = require("./projects.fixtures");
+  makeMaterialsArray,
+  makeStepsArray,
+  makeUsersArray,
+} = require("./test-helpers");
+const helpers = require('./test-helpers')
 
 describe(`projects endpoints`, function() {
   let db;
@@ -19,9 +23,13 @@ describe(`projects endpoints`, function() {
 
   after("disconnect from db", () => db.destroy());
 
-  before('clean the table', () => db.raw('TRUNCATE projects, materials, steps, users RESTART IDENTITY CASCADE'))
+  before("clean the table", () =>
+    helpers.cleanTables(db)
+  );
 
-  afterEach('cleanup the table',() => db.raw('TRUNCATE projects, materials, steps, users RESTART IDENTITY CASCADE'))
+  afterEach("cleanup the table", () =>
+    helpers.cleanTables(db)
+  );
 
   describe(`GET /api/projects`, () => {
     context(`Given no projects`, () => {
@@ -33,10 +41,18 @@ describe(`projects endpoints`, function() {
     });
 
     context("Given there are projects in the database", () => {
+      const testUsers = makeUsersArray();
       const testProjects = makeProjectsArray();
+      const testMaterials = makeMaterialsArray();
+      const testSteps = makeStepsArray();
 
       beforeEach("insert projects", () => {
-        return db.into("projects").insert(testProjects);
+        return db
+          .into("users")
+          .insert(testUsers)
+          .then(() => {
+            return db.into("projects").insert(testProjects);
+          });
       });
 
       it("responds with 200 and all of the projects", () => {
@@ -73,12 +89,17 @@ describe(`projects endpoints`, function() {
       });
     });
     context("Given there are projects in the database", () => {
+      const testUsers = makeUsersArray();
       const testProjects = makeProjectsArray();
 
       beforeEach("insert projects", () => {
-        return db.into("projects").insert(testProjects);
+        return db
+          .into("users")
+          .insert(testUsers)
+          .then(() => {
+            return db.into("projects").insert(testProjects);
+          });
       });
-
       it("responds with 200 and the specified project", () => {
         const projectId = 2;
         const expectedProject = testProjects[projectId - 1];
@@ -153,10 +174,16 @@ describe(`projects endpoints`, function() {
 
   describe(`DELETE /api/projects/:project_id`, () => {
     context("Given there are projects in the database", () => {
+      const testUsers = makeUsersArray();
       const testProjects = makeProjectsArray();
 
       beforeEach("insert projects", () => {
-        return db.into("projects").insert(testProjects);
+        return db
+          .into("users")
+          .insert(testUsers)
+          .then(() => {
+            return db.into("projects").insert(testProjects);
+          });
       });
 
       it("responds with 204 and removes the project", () => {
