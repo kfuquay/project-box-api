@@ -1,6 +1,17 @@
+
 const ProjectsService = {
-  getAllProjects(knex) {
-    return knex.select("*").from("projects");
+  // getAllProjects(knex) {
+  //   return knex.select("*").from("projects");
+  // },
+  getAllProjects(db) {
+    return db
+      .from("projects")
+      .select("projects.id", "projects.title", "projects.summary",
+      db.raw(`json_strip_nulls(json_build_object('id', projects.user_id)) AS "author"`),)
+      .leftJoin("materials", "projects.id", "materials.project_id")
+      .leftJoin("steps", "projects.id", "steps.project_id")
+      .leftJoin('users', 'projects.user_id', 'users.id')
+      .groupBy("projects.id");
   },
   insertProject(knex, newProject) {
     return knex
