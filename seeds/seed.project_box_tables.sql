@@ -5,8 +5,10 @@ TRUNCATE
 
 INSERT INTO users (id, username, password)
 VALUES
-    ( 1, 'dunder', 'dunder'),
-    (2, 'test', 'test');
+    ( 1, 'dunder', '11AAaa!'),
+    (2, 'testing', 'Testing123!'),
+    (3, 'user', 'User999!'),
+    (4, 'KnitPearl66!!');
 
 INSERT INTO projects (title, summary, user_id)
 VALUES
@@ -17,10 +19,10 @@ VALUES
 
 INSERT INTO steps (name, project_id)
 VALUES 
-('cast on', 1), ('bind off', 1), ('x', 2), ('y', 3), ('z', 4);
+('cast on', 1), ('knit', 1) ('bind off', 1), ('shape metal', 2), ('solder', 2), ('file', 2) ('prepare shuttle', 3), ('make knots', 3), ('enjoy', 3) ('cut wood to some dimensions', 4), ('nail', 4), ('hang', 4);
 
     INSERT INTO materials (name, project_id)
 VALUES
-('needles', 1), ('yarn', 1), ('x', 2), ('y', 3), ('z', 4);
+('needles', 1), ('yarn', 1), ('silver', 2), ('ring mandrel', 2), ('hammer', 2), ('file', 2) ('thread', 3), ('shuttle', 3), ('time', 3) ('wood', 4), ('hammer', 4), ('nails', 4);
 
 COMMIT;

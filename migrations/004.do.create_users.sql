@@ -7,5 +7,5 @@ CREATE TABLE users (
 ALTER TABLE projects
     ADD COLUMN 
     user_id INTEGER REFERENCES users
-    (id)
+    (id) 
     ON DELETE SET NULL;
