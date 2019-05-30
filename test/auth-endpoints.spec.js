@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const app = require("../src/app");
 const helpers = require("./test-helpers");
 
-describe.only("Auth Endpoints", function() {
+describe("Auth Endpoints", function() {
   let db;
 
   const { testUsers } = helpers.makeProjectsFixtures();
@@ -23,7 +23,7 @@ describe.only("Auth Endpoints", function() {
 
   afterEach("cleanup", () => helpers.cleanTables(db));
 
-  describe.only(`POST /api/auth/login`, () => {
+  describe(`POST /api/auth/login`, () => {
     beforeEach("insert users", () => helpers.seedUsers(db, testUsers));
 
     const requiredFields = ["username", "password"];

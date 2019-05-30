@@ -127,13 +127,33 @@ function seedUsers(db, users) {
     .insert(preppedUsers)
     .then(() =>
       // update the auto sequence to stay in sync
-      db.raw(`SELECT setval('users_id_seq', ?)`, [
-        users[users.length - 1].id,
-      ])
+      db.raw(`SELECT setval('users_id_seq', ?)`, [users[users.length - 1].id])
     );
 }
 
+function seedProjectsTables(db, users, projects) {
+  // use a transaction to group the queries and auto rollback on any failure
+  return db.transaction(async trx => {
+    await seedUsers(trx, users);
+    await trx.into("projects").insert(projects);
+    // update the auto sequence to match the forced id values
+    await trx.raw(`SELECT setval('projects_id_seq', ?)`, [
+      projects[projects.length - 1].id,
+    ]);
+  });
+}
+
+function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
+  const token = jwt.sign({ user_id: user.id }, secret, {
+    subject: user.username,
+    algorithm: "HS256",
+  });
+  return `Bearer ${token}`;
+}
+
 module.exports = {
+  makeAuthHeader,
+  seedProjectsTables,
   seedUsers,
   cleanTables,
   makeUsersArray,
