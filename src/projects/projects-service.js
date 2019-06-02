@@ -2,14 +2,21 @@ const ProjectsService = {
   // getAllProjects(knex) {
   //   return knex.select("*").from("projects");
   // },
-  getAllProjects(db) {
-    return db
+  // getAllProjects(db) {
+  //   return db
+  //     .from("projects")
+  //     .select("projects.title", "projects.summary")
+  //     .leftJoin("materials", "projects.id", "materials.project_id")
+  //     .leftJoin("steps", "projects.id", "steps.project_id")
+  //     .leftJoin("users", "projects.user_id", "users.id")
+  //     .groupBy("projects.id");
+  // },
+  getAllProjects(knex) {
+    return knex
+      .select('*')
       .from("projects")
-      .select("projects.title", "projects.summary")
-      .leftJoin("materials", "projects.id", "materials.project_id")
-      .leftJoin("steps", "projects.id", "steps.project_id")
-      .leftJoin('users', 'projects.user_id', 'users.id')
-      .groupBy("projects.id");
+      // .leftJoin("materials as m", "projects.id", "m.project_id")
+      // .groupBy("projects.id");
   },
   // getAllProjects(db) {
   //   return db.raw(
@@ -18,12 +25,13 @@ const ProjectsService = {
   // },
   insertProject(knex, newProject) {
     return knex
-      .insert(newProject)
+      .insert(newProject.title, newProject.summary, newProject.user_id)
       .into("projects")
       .returning("*")
       .then(rows => {
         return rows[0];
       });
+    //TODO something like newproject.materials.map(insert into materials) *NEED TO RETURN PROJECT_ID ABOVE AND INSERT INTO MATERIALS AND STEPS TABLES*
   },
   getById(knex, id) {
     return knex

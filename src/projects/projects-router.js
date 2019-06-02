@@ -10,7 +10,9 @@ const serializeProject = project => ({
   id: project.id,
   title: xss(project.title),
   summary: xss(project.summary),
-  user_id: project.user_id
+  user_id: project.user_id,
+  materials: project.materials,
+  steps: project.steps
 });
 
 projectsRouter
