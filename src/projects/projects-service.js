@@ -25,13 +25,12 @@ const ProjectsService = {
   // },
   insertProject(knex, newProject) {
     return knex
-      .insert(newProject.title, newProject.summary, newProject.user_id)
+      .insert(newProject.title, newProject.summary, newProject.user_id, newProject.materials, newProject.steps)
       .into("projects")
       .returning("*")
       .then(rows => {
         return rows[0];
       });
-    //TODO something like newproject.materials.map(insert into materials) *NEED TO RETURN PROJECT_ID ABOVE AND INSERT INTO MATERIALS AND STEPS TABLES*
   },
   getById(knex, id) {
     return knex

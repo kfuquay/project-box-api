@@ -1,7 +1,8 @@
-const path = require('path')
+const path = require("path");
 const express = require("express");
 const xss = require("xss");
 const ProjectsService = require("./projects-service");
+const UsersService = require("../users/users-service");
 
 const projectsRouter = express.Router();
 const jsonParser = express.json();
@@ -12,7 +13,7 @@ const serializeProject = project => ({
   summary: xss(project.summary),
   user_id: project.user_id,
   materials: project.materials,
-  steps: project.steps
+  steps: project.steps,
 });
 
 projectsRouter
@@ -26,17 +27,23 @@ projectsRouter
       .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
-    const { title, summary, user_id} = req.body;
-    const newProject = { title, summary };
-
+    const { title, summary, materials, steps } = req.body;
+    console.log(req.body);
+    const user_id = UsersService.getByUsername(
+      req.app.get("db"),
+      req.body.user_id
+    );
+    const newProject = { title, summary, materials, steps, user_id };
+    console.log(newProject);
+    
     if (!title) {
       return res.status(400).json({
         error: { message: `Missing 'title' in request body` },
       });
     }
 
-    newProject.user_id = user_id
-    
+    // newProject.user_id = user_id
+
     ProjectsService.insertProject(req.app.get("db"), newProject)
       .then(project => {
         res
