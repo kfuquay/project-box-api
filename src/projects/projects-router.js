@@ -27,15 +27,10 @@ projectsRouter
       .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
-    const { title, summary, materials, steps } = req.body;
-    console.log(req.body);
-    const user_id = UsersService.getByUsername(
-      req.app.get("db"),
-      req.body.user_id
-    );
+    const { title, summary, materials, steps, user_id } = req.body;
     const newProject = { title, summary, materials, steps, user_id };
     console.log(newProject);
-    
+
     if (!title) {
       return res.status(400).json({
         error: { message: `Missing 'title' in request body` },
@@ -48,7 +43,7 @@ projectsRouter
       .then(project => {
         res
           .status(201)
-          .location(path.posix.join(req.originalUrl, `/${project.id}`))
+          .location(path.posix.join(req.originalUrl,`/${project.id}`))
           .json(serializeProject(project));
       })
       .catch(next);

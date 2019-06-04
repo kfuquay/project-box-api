@@ -22,7 +22,8 @@ const UsersService = {
       .first();
   },
   getByUsername(knex, username) {
-    return knex("users")
+    return knex
+      .from("users")
       .select("*")
       .where("username", username)
       .first();

@@ -41,4 +41,5 @@ usersRouter.post("/", jsonBodyParser, (req, res, next) => {
     })
     .catch(next);
 });
+
 module.exports = usersRouter;
