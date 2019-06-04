@@ -29,7 +29,6 @@ projectsRouter
   .post(jsonParser, (req, res, next) => {
     const { title, summary, materials, steps, user_id } = req.body;
     const newProject = { title, summary, materials, steps, user_id };
-    console.log(newProject);
 
     if (!title) {
       return res.status(400).json({
@@ -37,13 +36,11 @@ projectsRouter
       });
     }
 
-    // newProject.user_id = user_id
-
     ProjectsService.insertProject(req.app.get("db"), newProject)
       .then(project => {
         res
           .status(201)
-          .location(path.posix.join(req.originalUrl,`/${project.id}`))
+          .location(path.posix.join(req.originalUrl, `/${project.id}`))
           .json(serializeProject(project));
       })
       .catch(next);
@@ -66,6 +63,29 @@ projectsRouter
   })
   .get((req, res, next) => {
     res.json(serializeProject(res.project));
+  })
+  .patch(jsonParser, (req, res, next) => {
+    const { title, summary, steps, materials, user_id } = req.body;
+    const projectToUpdate = { title, summary, steps, materials, user_id };
+
+    const numberOfValues = Object.values(projectToUpdate).filter(Boolean)
+      .length;
+    if (numberOfValues === 0)
+      return res.status(400).json({
+        error: {
+          message: `Request body is missing required fields`
+        }
+      });
+
+    ProjectsService.updateProject(
+      req.app.get("db"),
+      req.params.project_id,
+      serializeProject(projectToUpdate)
+      )
+      .then(numRowsAffected => {
+        res.status(204).end();
+      })
+      .catch(next);
   })
   .delete((req, res, next) => {
     ProjectsService.deleteProject(req.app.get("db"), req.params.project_id)
