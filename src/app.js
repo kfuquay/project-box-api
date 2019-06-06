@@ -37,6 +37,7 @@ app.use(function(req, res) {
     "Access-Control-Allow-Origin",
     "https://project-box.kirstyfuquay.now.sh/"
   );
+  res.end()
 });
 // intercept OPTIONS method
 //   if (oneof && req.method == 'OPTIONS') {
