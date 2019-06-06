@@ -4,4 +4,5 @@ module.exports = {
     DB_URL: process.env.DB_URL || 'postgresql://dunder-mifflin:dunder@localhost/project-box',
     JWT_SECRET: process.env.JWT_SECRET || 'change-this-secret',
     JWT_EXPIRTY: process.env.JWT_EXPIRTY || '5h',
+    CLIENT_ORIGIN: 'https://project-box-ims3hchxt.now.sh/'
 }
