@@ -4,8 +4,6 @@ const app = require("../src/app");
 const  {
   makeProjectsArray,
   makeMaliciousProject,
-  makeMaterialsArray,
-  makeStepsArray,
   makeUsersArray,
 } = require("./test-helpers");
 const helpers = require('./test-helpers')
@@ -43,8 +41,6 @@ describe(`projects endpoints`, function() {
     context("Given there are projects in the database", () => {
       const testUsers = makeUsersArray();
       const testProjects = makeProjectsArray();
-      const testMaterials = makeMaterialsArray();
-      const testSteps = makeStepsArray();
 
       beforeEach("insert projects", () => {
         return db

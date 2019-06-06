@@ -20,14 +20,14 @@ describe(`Projects service object`, function() {
   //remove all the data from the table before we insert new test data
   before("clean the table", () =>
     db.raw(
-      "TRUNCATE projects, materials, steps, users RESTART IDENTITY CASCADE"
+      "TRUNCATE projects, users RESTART IDENTITY CASCADE"
     )
   );
 
   //remove all data after each test
   afterEach("cleanup the table", () =>
     db.raw(
-      "TRUNCATE projects, materials, steps, users RESTART IDENTITY CASCADE"
+      "TRUNCATE projects, users RESTART IDENTITY CASCADE"
     )
   );
   //context is functionally interchangable with describe, using context is more semantically appropriate here
@@ -56,6 +56,8 @@ describe(`Projects service object`, function() {
           title: thirdTestProject.title,
           summary: thirdTestProject.summary,
           user_id: thirdTestProject.user_id,
+          materials: thirdTestProject.materials,
+          steps: thirdTestProject.steps,
         });
       });
     });
@@ -76,6 +78,8 @@ describe(`Projects service object`, function() {
         title: "updated title",
         summary: "updated summary",
         user_id: 1,
+        materials: ['update', 'update'],
+        steps: ['update', 'update'],
       };
       return ProjectsService.updateProject(
         db,
@@ -107,6 +111,8 @@ describe(`Projects service object`, function() {
         title: "Test new title",
         summary: "Test new summary",
         user_id: 1,
+        materials: ['test'],
+        steps: ['test step', 'test step two'],
       };
       return ProjectsService.insertProject(db, newProject).then(actual => {
         expect(actual).to.eql({
@@ -114,6 +120,8 @@ describe(`Projects service object`, function() {
           title: newProject.title,
           summary: newProject.summary,
           user_id: newProject.user_id,
+          materials: newProject.materials,
+          steps: newProject.steps
         });
       });
     });

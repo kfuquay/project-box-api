@@ -24,66 +24,32 @@ function makeProjectsArray() {
       summary:
         "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus consequuntur deserunt commodi, nobis qui inventore corrupti iusto aliquid debitis unde non.Adipisci, pariatur.Molestiae, libero esse hic adipisci autem neque ?",
       user_id: 1,
+      materials: ['one', 'two'],
+      steps: ['one', 'two'],
     },
     {
       id: 2,
       title: "second test project",
       summary: "zzzz",
       user_id: 1,
+      materials: ['one', 'two'],
+      steps: ['one', 'two'],
     },
     {
       id: 3,
       title: "third test project!!",
       summary: "okokok",
       user_id: 2,
+      materials: ['one', 'two'],
+      steps: ['one', 'two'],
     },
     {
       id: 4,
       title: "FOURTH TITLE",
       summary: "summmmaryy",
       user_id: 2,
-    },
-  ];
-}
-
-function makeMaterialsArray() {
-  return [
-    {
-      id: 1,
-      project_id: 1,
-      name: "First test material",
-    },
-    {
-      id: 2,
-      project_id: 1,
-      name: "Second test material",
-    },
-    {
-      id: 3,
-      project_id: 2,
-      name: "first test material",
-    },
-    {
-      id: 4,
-      project_id: 3,
-      name: "first test material",
-    },
-  ];
-}
-
-function makeStepsArray() {
-  return [
-    {
-      id: 1,
-      project_id: 1,
-      name: "first step",
-      sequence: 1,
-    },
-    {
-      id: 2,
-      project_id: 1,
-      name: "second step",
-      sequence: 2,
+      materials: ['one', 'two'],
+      steps: ['one', 'two'],
     },
   ];
 }
@@ -105,15 +71,17 @@ function makeMaliciousProject() {
     expectedProject,
   };
 }
+
 function makeProjectsFixtures() {
   const testUsers = makeUsersArray();
   const testProjects = makeProjectsArray(testUsers);
   return { testUsers, testProjects };
 }
+
 function cleanTables(db) {
   return db.raw(
     `TRUNCATE
-    projects, materials, steps, users RESTART IDENTITY CASCADE`
+    users, projects RESTART IDENTITY CASCADE`
   );
 }
 
@@ -158,8 +126,6 @@ module.exports = {
   cleanTables,
   makeUsersArray,
   makeProjectsArray,
-  makeMaterialsArray,
-  makeStepsArray,
   makeMaliciousProject,
   makeProjectsFixtures,
 };
