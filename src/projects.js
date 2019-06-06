@@ -1,10 +1,10 @@
-require('dotenv').config()
-const knex = require('knex')
-const ProjectsService = require('./projects/projects-service')
+// require('dotenv').config()
+// const knex = require('knex')
+// const ProjectsService = require('./projects/projects-service')
 
-const knexInstance = knex({
-  client: 'pg',
-  connection: process.env.DB_URL,
-})
+// const knexInstance = knex({
+//   client: 'pg',
+//   connection: process.env.DB_URL,
+// })
 
-console.log(ProjectsService.getAllProjects())
+// console.log(ProjectsService.getAllProjects())

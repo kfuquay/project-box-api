@@ -20,10 +20,6 @@ app.use("/api/projects", projectsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/auth", authRouter);
 
-app.get("/api/", (req, res) => {
-  res.json({ ok: true });
-});
-
 app.use(function errorHandler(error, req, res, next) {
   let response;
   if (NODE_ENV === "production") {
@@ -33,6 +29,10 @@ app.use(function errorHandler(error, req, res, next) {
     response = { message: error.message, error };
   }
   res.status(500).json(response);
+});
+
+app.get("/api/", (req, res) => {
+  res.json({ ok: true });
 });
 
 module.exports = app;
