@@ -35,7 +35,7 @@ app.use(cors({ origin: CLIENT_ORIGIN }));
 app.use(function(req, res) {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "https://project-box.kirstyfuquay.now.sh/"
+    "https://project-box-ims3hchxt.now.sh/"
   );
   res.end()
 });
