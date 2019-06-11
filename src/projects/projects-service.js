@@ -1,6 +1,6 @@
 const ProjectsService = {
   getAllProjects(knex) {
-    return knex.select("*").from("projects");
+    return knex.select("*").from("projects").leftJoin('users', 'projects.user_id', 'users.id' );
   },
   insertProject(knex, newProject) {
     return knex
