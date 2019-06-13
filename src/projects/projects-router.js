@@ -2,7 +2,7 @@ const path = require("path");
 const express = require("express");
 const xss = require("xss");
 const ProjectsService = require("./projects-service");
-const UsersService = require("../users/users-service");
+const { requireAuth } = require('../middleware/jwt-auth');
 
 const projectsRouter = express.Router();
 const jsonParser = express.json();
@@ -14,7 +14,7 @@ const serializeProject = project => ({
   user_id: project.user_id,
   materials: project.materials,
   steps: project.steps,
-  username: xss(project.username)
+  username: xss(project.username),
 });
 
 projectsRouter
@@ -27,7 +27,7 @@ projectsRouter
       })
       .catch(next);
   })
-  .post(jsonParser, (req, res, next) => {
+  .post(requireAuth, jsonParser, (req, res, next) => {
     const { title, summary, materials, steps, user_id } = req.body;
     const newProject = { title, summary, materials, steps, user_id };
 
@@ -74,15 +74,15 @@ projectsRouter
     if (numberOfValues === 0)
       return res.status(400).json({
         error: {
-          message: `Request body is missing required fields`
-        }
+          message: `Request body is missing required fields`,
+        },
       });
 
     ProjectsService.updateProject(
       req.app.get("db"),
       req.params.project_id,
       serializeProject(projectToUpdate)
-      )
+    )
       .then(numRowsAffected => {
         res.status(204).end();
       })
