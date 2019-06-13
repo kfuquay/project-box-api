@@ -63,9 +63,7 @@ const expectedReturnGetAllProjects = [
     user_id: 1,
     materials: ["one", "two"],
     steps: ["one", "two"],
-    id: 1,
     username: "dunder",
-    password: "dunder",
   },
   {
     id: 2,
@@ -74,9 +72,7 @@ const expectedReturnGetAllProjects = [
     user_id: 1,
     materials: ["one", "two"],
     steps: ["one", "two"],
-    id: 1,
     username: "dunder",
-    password: "dunder",
   },
   {
     id: 3,
@@ -85,9 +81,7 @@ const expectedReturnGetAllProjects = [
     user_id: 2,
     materials: ["one", "two"],
     steps: ["one", "two"],
-    id: 2,
     username: "test",
-    password: "test",
   },
   {
     id: 4,
@@ -96,9 +90,7 @@ const expectedReturnGetAllProjects = [
     user_id: 2,
     materials: ["one", "two"],
     steps: ["one", "two"],
-    id: 2,
     username: "test",
-    password: "test",
   },
 ];
 
@@ -111,7 +103,6 @@ const expectedDeleteResults = [
     user_id: 1,
     materials: ['one', 'two'],
     steps: ['one', 'two'],
-    id: 1,
     username: 'dunder'
   },
   {
@@ -121,7 +112,6 @@ const expectedDeleteResults = [
     user_id: 2,
     materials: ['one', 'two'],
     steps: ['one', 'two'],
-    id: 2,
     username: 'test'
   },
   {
@@ -131,7 +121,6 @@ const expectedDeleteResults = [
     user_id: 2,
     materials: ['one', 'two'],
     steps: ['one', 'two'],
-    id: 2,
     username: 'test'
   },
 ];
@@ -145,9 +134,7 @@ const expectedDeleteResultsRaw = [
     user_id: 1,
     materials: ['one', 'two'],
     steps: ['one', 'two'],
-    id: 1,
     username: 'dunder',
-    password: 'dunder'
   },
   {
     id: 3,
@@ -156,9 +143,7 @@ const expectedDeleteResultsRaw = [
     user_id: 2,
     materials: ['one', 'two'],
     steps: ['one', 'two'],
-    id: 2,
     username: 'test',
-    password: 'test'
   },
   {
     id: 4,
@@ -167,9 +152,7 @@ const expectedDeleteResultsRaw = [
     user_id: 2,
     materials: ['one', 'two'],
     steps: ['one', 'two'],
-    id: 2,
     username: 'test',
-    password: 'test'
   },
 ];
 
@@ -182,7 +165,6 @@ const expectedProjects = [
     user_id: 1,
     materials: ["one", "two"],
     steps: ["one", "two"],
-    id: 1,
     username: "dunder",
   },
   {
@@ -192,7 +174,6 @@ const expectedProjects = [
     user_id: 1,
     materials: ["one", "two"],
     steps: ["one", "two"],
-    id: 1,
     username: "dunder",
   },
   {
@@ -202,7 +183,6 @@ const expectedProjects = [
     user_id: 2,
     materials: ["one", "two"],
     steps: ["one", "two"],
-    id: 2,
     username: "test",
   },
   {
@@ -212,7 +192,6 @@ const expectedProjects = [
     user_id: 2,
     materials: ["one", "two"],
     steps: ["one", "two"],
-    id: 2,
     username: "test",
   },
 ];

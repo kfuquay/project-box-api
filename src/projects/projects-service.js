@@ -1,7 +1,7 @@
 const ProjectsService = {
   getAllProjects(knex) {
     return knex
-      .select("*")
+      .select("projects.id", "projects.title", "projects.summary", "projects.materials", "projects.steps", "projects.user_id", "users.username")
       .from("projects")
       .leftJoin("users", "projects.user_id", "users.id");
   },
