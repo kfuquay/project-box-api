@@ -1,12 +1,13 @@
 const { expect } = require("chai");
 const knex = require("knex");
 const app = require("../src/app");
-const  {
+const {
   makeProjectsArray,
   makeMaliciousProject,
   makeUsersArray,
+  expectedProjects,
 } = require("./test-helpers");
-const helpers = require('./test-helpers')
+const helpers = require("./test-helpers");
 
 describe(`projects endpoints`, function() {
   let db;
@@ -21,13 +22,9 @@ describe(`projects endpoints`, function() {
 
   after("disconnect from db", () => db.destroy());
 
-  before("clean the table", () =>
-    helpers.cleanTables(db)
-  );
+  before("clean the table", () => helpers.cleanTables(db));
 
-  afterEach("cleanup the table", () =>
-    helpers.cleanTables(db)
-  );
+  afterEach("cleanup the table", () => helpers.cleanTables(db));
 
   describe(`GET /api/projects`, () => {
     context(`Given no projects`, () => {
@@ -54,7 +51,7 @@ describe(`projects endpoints`, function() {
       it("responds with 200 and all of the projects", () => {
         return supertest(app)
           .get("/api/projects")
-          .expect(200, testProjects);
+          .expect(200, expectedProjects);
       });
     });
     context("Given an XSS attack project", () => {
@@ -98,7 +95,15 @@ describe(`projects endpoints`, function() {
       });
       it("responds with 200 and the specified project", () => {
         const projectId = 2;
-        const expectedProject = testProjects[projectId - 1];
+        const expectedProject = {
+          id: 2,
+          title: "second test project",
+          summary: "zzzz",
+          user_id: 1,
+          materials: ["one", "two"],
+          steps: ["one", "two"],
+          username: "",
+        };
         return supertest(app)
           .get(`/api/projects/${projectId}`)
           .expect(200, expectedProject);
@@ -124,13 +129,21 @@ describe(`projects endpoints`, function() {
   });
 
   describe(`POST /api/projects`, () => {
+    const testUsers = makeUsersArray();
+    const testProjects = makeProjectsArray();
+    beforeEach("insert projects", () => {
+      return db.into("users").insert(testUsers);
+    });
     it(`creates a project, responding with 201 and the new project`, function() {
       const newProject = {
         title: "test",
         summary: "test summary",
+        materials: ["test"],
+        steps: ["test"],
       };
       return supertest(app)
         .post("/api/projects")
+        .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
         .send(newProject)
         .expect(201)
         .expect(res => {
@@ -148,6 +161,7 @@ describe(`projects endpoints`, function() {
     it(`responds with 400 and an error message when the 'title' is missing`, () => {
       return supertest(app)
         .post("/api/projects")
+        .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
         .send({
           summary: "test summary",
         })
@@ -159,6 +173,7 @@ describe(`projects endpoints`, function() {
       const { maliciousProject, expectedProject } = makeMaliciousProject();
       return supertest(app)
         .post("/api/projects")
+        .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
         .send(maliciousProject)
         .expect(201)
         .expect(res => {
@@ -184,16 +199,14 @@ describe(`projects endpoints`, function() {
 
       it("responds with 204 and removes the project", () => {
         const idToRemove = 2;
-        const expectedProjects = testProjects.filter(
-          project => project.id !== idToRemove
-        );
+
         return supertest(app)
           .delete(`/api/projects/${idToRemove}`)
           .expect(204)
           .then(res =>
             supertest(app)
               .get(`/api/projects`)
-              .expect(expectedProjects)
+              .expect(helpers.expectedDeleteResults)
           );
       });
     });

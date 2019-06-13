@@ -1,6 +1,7 @@
 const ProjectsService = require("../src/projects/projects-service");
 const knex = require("knex");
 const { makeProjectsArray, makeUsersArray } = require("./test-helpers");
+const helpers = require("./test-helpers");
 
 describe(`Projects service object`, function() {
   let db;
@@ -19,16 +20,12 @@ describe(`Projects service object`, function() {
 
   //remove all the data from the table before we insert new test data
   before("clean the table", () =>
-    db.raw(
-      "TRUNCATE projects, users RESTART IDENTITY CASCADE"
-    )
+    db.raw("TRUNCATE projects, users RESTART IDENTITY CASCADE")
   );
 
   //remove all data after each test
   afterEach("cleanup the table", () =>
-    db.raw(
-      "TRUNCATE projects, users RESTART IDENTITY CASCADE"
-    )
+    db.raw("TRUNCATE projects, users RESTART IDENTITY CASCADE")
   );
   //context is functionally interchangable with describe, using context is more semantically appropriate here
   context(`Given 'projects' has data`, () => {
@@ -44,7 +41,7 @@ describe(`Projects service object`, function() {
 
     it(`getAllProjects() resolves all articles from 'projects' table`, () => {
       return ProjectsService.getAllProjects(db).then(actual => {
-        expect(actual).to.eql(testProjects);
+        expect(actual).to.eql(helpers.expectedReturnGetAllProjects);
       });
     });
     it(`getById() resolves a project by id from 'projects' table`, () => {
@@ -62,14 +59,14 @@ describe(`Projects service object`, function() {
       });
     });
     it(`deleteProject() removes a project by id from 'projects' table`, () => {
-      const projectId = 3;
+      const projectId = 2;
       return ProjectsService.deleteProject(db, projectId)
         .then(() => ProjectsService.getAllProjects(db))
         .then(allProjects => {
-          const expected = testProjects.filter(
+          const expected = allProjects.filter(
             project => project.id !== projectId
           );
-          expect(allProjects).to.eql(expected);
+          expect(allProjects).to.eql(helpers.expectedDeleteResultsRaw);
         });
     });
     it(`updateProject() updates a project from the 'projects' table`, () => {
@@ -78,8 +75,8 @@ describe(`Projects service object`, function() {
         title: "updated title",
         summary: "updated summary",
         user_id: 1,
-        materials: ['update', 'update'],
-        steps: ['update', 'update'],
+        materials: ["update", "update"],
+        steps: ["update", "update"],
       };
       return ProjectsService.updateProject(
         db,
@@ -111,8 +108,8 @@ describe(`Projects service object`, function() {
         title: "Test new title",
         summary: "Test new summary",
         user_id: 1,
-        materials: ['test'],
-        steps: ['test step', 'test step two'],
+        materials: ["test"],
+        steps: ["test step", "test step two"],
       };
       return ProjectsService.insertProject(db, newProject).then(actual => {
         expect(actual).to.eql({
@@ -121,7 +118,7 @@ describe(`Projects service object`, function() {
           summary: newProject.summary,
           user_id: newProject.user_id,
           materials: newProject.materials,
-          steps: newProject.steps
+          steps: newProject.steps,
         });
       });
     });
