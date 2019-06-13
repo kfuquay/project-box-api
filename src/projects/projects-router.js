@@ -7,7 +7,7 @@ const { requireAuth } = require('../middleware/jwt-auth');
 const projectsRouter = express.Router();
 const jsonParser = express.json();
 
-const serializeProject = project => ({
+const serializeProjects = project => ({
   id: project.id,
   title: xss(project.title),
   summary: xss(project.summary),
@@ -17,13 +17,22 @@ const serializeProject = project => ({
   username: xss(project.username),
 });
 
+const serializeProject = project => ({
+  id: project.id,
+  title: xss(project.title),
+  summary: xss(project.summary),
+  user_id: project.user_id,
+  materials: project.materials,
+  steps: project.steps,
+});
+
 projectsRouter
   .route("/")
   .get((req, res, next) => {
     const knexInstance = req.app.get("db");
     ProjectsService.getAllProjects(knexInstance)
       .then(projects => {
-        res.json(projects.map(serializeProject));
+        res.json(projects.map(serializeProjects));
       })
       .catch(next);
   })
