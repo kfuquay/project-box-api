@@ -102,7 +102,6 @@ describe(`projects endpoints`, function() {
           user_id: 1,
           materials: ["one", "two"],
           steps: ["one", "two"],
-          username: "",
         };
         return supertest(app)
           .get(`/api/projects/${projectId}`)

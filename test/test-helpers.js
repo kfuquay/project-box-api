@@ -54,46 +54,6 @@ function makeProjectsArray() {
   ];
 }
 
-const expectedReturnGetAllProjects = [
-  {
-    id: 1,
-    title: "First test project!",
-    summary:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus consequuntur deserunt commodi, nobis qui inventore corrupti iusto aliquid debitis unde non.Adipisci, pariatur.Molestiae, libero esse hic adipisci autem neque ?",
-    user_id: 1,
-    materials: ["one", "two"],
-    steps: ["one", "two"],
-    username: "dunder",
-  },
-  {
-    id: 2,
-    title: "second test project",
-    summary: "zzzz",
-    user_id: 1,
-    materials: ["one", "two"],
-    steps: ["one", "two"],
-    username: "dunder",
-  },
-  {
-    id: 3,
-    title: "third test project!!",
-    summary: "okokok",
-    user_id: 2,
-    materials: ["one", "two"],
-    steps: ["one", "two"],
-    username: "test",
-  },
-  {
-    id: 4,
-    title: "FOURTH TITLE",
-    summary: "summmmaryy",
-    user_id: 2,
-    materials: ["one", "two"],
-    steps: ["one", "two"],
-    username: "test",
-  },
-];
-
 const expectedDeleteResults = [
   {
     id: 1,
@@ -101,58 +61,27 @@ const expectedDeleteResults = [
     summary:
       "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus consequuntur deserunt commodi, nobis qui inventore corrupti iusto aliquid debitis unde non.Adipisci, pariatur.Molestiae, libero esse hic adipisci autem neque ?",
     user_id: 1,
-    materials: ['one', 'two'],
-    steps: ['one', 'two'],
-    username: 'dunder'
+    materials: ["one", "two"],
+    steps: ["one", "two"],
+    username: "dunder",
   },
   {
     id: 3,
     title: "third test project!!",
     summary: "okokok",
     user_id: 2,
-    materials: ['one', 'two'],
-    steps: ['one', 'two'],
-    username: 'test'
+    materials: ["one", "two"],
+    steps: ["one", "two"],
+    username: "test",
   },
   {
     id: 4,
     title: "FOURTH TITLE",
     summary: "summmmaryy",
     user_id: 2,
-    materials: ['one', 'two'],
-    steps: ['one', 'two'],
-    username: 'test'
-  },
-];
-
-const expectedDeleteResultsRaw = [
-  {
-    id: 1,
-    title: "First test project!",
-    summary:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus consequuntur deserunt commodi, nobis qui inventore corrupti iusto aliquid debitis unde non.Adipisci, pariatur.Molestiae, libero esse hic adipisci autem neque ?",
-    user_id: 1,
-    materials: ['one', 'two'],
-    steps: ['one', 'two'],
-    username: 'dunder',
-  },
-  {
-    id: 3,
-    title: "third test project!!",
-    summary: "okokok",
-    user_id: 2,
-    materials: ['one', 'two'],
-    steps: ['one', 'two'],
-    username: 'test',
-  },
-  {
-    id: 4,
-    title: "FOURTH TITLE",
-    summary: "summmmaryy",
-    user_id: 2,
-    materials: ['one', 'two'],
-    steps: ['one', 'two'],
-    username: 'test',
+    materials: ["one", "two"],
+    steps: ["one", "two"],
+    username: "test",
   },
 ];
 
@@ -262,9 +191,7 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
 }
 
 module.exports = {
-  expectedReturnGetAllProjects,
   expectedDeleteResults,
-  expectedDeleteResultsRaw,
   makeAuthHeader,
   seedProjectsTables,
   seedUsers,

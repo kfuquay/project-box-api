@@ -41,7 +41,7 @@ describe(`Projects service object`, function() {
 
     it(`getAllProjects() resolves all articles from 'projects' table`, () => {
       return ProjectsService.getAllProjects(db).then(actual => {
-        expect(actual).to.eql(helpers.expectedReturnGetAllProjects);
+        expect(actual).to.eql(helpers.expectedProjects);
       });
     });
     it(`getById() resolves a project by id from 'projects' table`, () => {
@@ -66,7 +66,7 @@ describe(`Projects service object`, function() {
           const expected = allProjects.filter(
             project => project.id !== projectId
           );
-          expect(allProjects).to.eql(helpers.expectedDeleteResultsRaw);
+          expect(allProjects).to.eql(helpers.expectedDeleteResults);
         });
     });
     it(`updateProject() updates a project from the 'projects' table`, () => {
