@@ -4,9 +4,9 @@ const bcrypt = require("bcryptjs");
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/;
 
 const UsersService = {
-  getAllUsers(knex) {
-    return knex.select("*").from("users");
-  },
+  // getAllUsers(knex) {
+  //   return knex.select("*").from("users");
+  // },
   insertUser(db, newUser) {
     return db
       .insert(newUser)
@@ -14,30 +14,30 @@ const UsersService = {
       .returning("*")
       .then(([user]) => user);
   },
-  getById(knex, id) {
-    return knex
-      .from("users")
-      .select("*")
-      .where("id", id)
-      .first();
-  },
-  getByUsername(knex, username) {
-    return knex
-      .from("users")
-      .select("*")
-      .where("username", username)
-      .first();
-  },
-  deleteUser(knex, id) {
-    return knex("users")
-      .where({ id })
-      .delete();
-  },
-  updateUser(knex, id, newUserFields) {
-    return knex("users")
-      .where({ id })
-      .update(newUserFields);
-  },
+  // getById(knex, id) {
+  //   return knex
+  //     .from("users")
+  //     .select("*")
+  //     .where("id", id)
+  //     .first();
+  // },
+  // getByUsername(knex, username) {
+  //   return knex
+  //     .from("users")
+  //     .select("*")
+  //     .where("username", username)
+  //     .first();
+  // },
+  // deleteUser(knex, id) {
+  //   return knex("users")
+  //     .where({ id })
+  //     .delete();
+  // },
+  // updateUser(knex, id, newUserFields) {
+  //   return knex("users")
+  //     .where({ id })
+  //     .update(newUserFields);
+  // },
   validatePassword(password) {
     if (password.length < 8) {
       return "Password must be longer than 8 characters";
