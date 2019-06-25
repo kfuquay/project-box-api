@@ -2,7 +2,7 @@ const path = require("path");
 const express = require("express");
 const xss = require("xss");
 const ProjectsService = require("./projects-service");
-const { requireAuth } = require('../middleware/jwt-auth');
+const { requireAuth } = require("../middleware/jwt-auth");
 
 const projectsRouter = express.Router();
 const jsonParser = express.json();
@@ -14,7 +14,7 @@ const serializeProjects = project => ({
   user_id: project.user_id,
   materials: project.materials,
   steps: project.steps,
-  username: xss(project.username),
+  username: xss(project.username)
 });
 
 const serializeProject = project => ({
@@ -23,11 +23,12 @@ const serializeProject = project => ({
   summary: xss(project.summary),
   user_id: project.user_id,
   materials: project.materials,
-  steps: project.steps,
+  steps: project.steps
 });
 
 projectsRouter
   .route("/")
+  // get all projects, serialize (clean inputs in case of xss attack)
   .get((req, res, next) => {
     const knexInstance = req.app.get("db");
     ProjectsService.getAllProjects(knexInstance)
@@ -36,13 +37,16 @@ projectsRouter
       })
       .catch(next);
   })
+  //check that user is successfully logged in, 
+  //make sure submitted project includes required 'title' field, then serialize and insert project into db, 
+  //create route to project using project.id
   .post(requireAuth, jsonParser, (req, res, next) => {
     const { title, summary, materials, steps, user_id } = req.body;
     const newProject = { title, summary, materials, steps, user_id };
 
     if (!title) {
       return res.status(400).json({
-        error: { message: `Missing 'title' in request body` },
+        error: { message: `Missing 'title' in request body` }
       });
     }
 
@@ -63,7 +67,7 @@ projectsRouter
       .then(project => {
         if (!project) {
           return res.status(404).json({
-            error: { message: `Project does not exist` },
+            error: { message: `Project does not exist` }
           });
         }
         res.project = project;
@@ -74,7 +78,10 @@ projectsRouter
   .get((req, res, next) => {
     res.json(serializeProject(res.project));
   })
-  .patch(jsonParser, (req, res, next) => {
+  //check that user is logged in,
+  //check that user has edited fields in project
+  //update project in db
+  .patch(requireAuth, jsonParser, (req, res, next) => {
     const { title, summary, steps, materials, user_id } = req.body;
     const projectToUpdate = { title, summary, steps, materials, user_id };
 
@@ -83,8 +90,8 @@ projectsRouter
     if (numberOfValues === 0)
       return res.status(400).json({
         error: {
-          message: `Request body is missing required fields`,
-        },
+          message: `Request body is missing required fields`
+        }
       });
 
     ProjectsService.updateProject(
@@ -97,7 +104,7 @@ projectsRouter
       })
       .catch(next);
   })
-  .delete((req, res, next) => {
+  .delete(requireAuth, (req, res, next) => {
     ProjectsService.deleteProject(req.app.get("db"), req.params.project_id)
       .then(numRowsAffected => {
         res.status(204).end();
